@@ -19,11 +19,15 @@ r = sr.Recognizer()
 
 
 def SpeakText(command):
-
 	# Initialize the engine
-	engine = pyttsx3.init()
-	engine.say(command)
-	engine.runAndWait()
+    engine = pyttsx3.init()
+    voices = engine.getProperty('voices')
+    for voice in voices:
+        if voice.languages[0] == u"en_IN":
+            engine.setProperty('voice', voice.id)
+            break
+    engine.say(command)
+    engine.runAndWait()
 
 
 # Loop infinitely for user to
