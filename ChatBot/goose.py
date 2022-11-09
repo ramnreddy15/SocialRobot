@@ -1,3 +1,5 @@
+# converts dataset
+
 file = open("dialogs.txt", "r")
 
 
