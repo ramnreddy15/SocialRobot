@@ -1,13 +1,13 @@
 import socket
+import threading
 
-HOST = '10.64.173.71' # Use this for client
-PORT = 12345 # Pick an open Port (1000+ recommended), must match the client sport
+HOST = '10.64.173.71' # Enter IP or Hostname of your server
+PORT = 12345 # Pick an open Port (1000+ recommended), must match the server port
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-print('Socket created')
+s.connect((HOST,PORT))
 
-#managing error exception
 try:
-	s.bind((HOST, PORT))
+    s.bind((HOST, PORT))
 except socket.error:
     print ('Bind failed ')
 
@@ -16,11 +16,20 @@ print ('Socket awaiting messages')
 (conn, addr) = s.accept()
 print ('Connected')
 
-# awaiting for message
+def telemetryReceive():
 while True:
-	data = conn.recv(1024)
-	print (data)
+reply = s.recv(1024)
+if reply != None:
+print(reply)
 
-	# # Sending reply
-	conn.send(data+bytes(" works",'utf-8'))
-	# conn.close() # Close connections
+def telemetrySend():
+while True:
+command = input('Enter your command: ')
+if command != None:
+s.send(bytes(command, 'utf-8'))
+
+def main():
+threading.Thread(target=telemetryReceive).start()
+threading.Thread(target=telemetrySend).start()
+
+main()
