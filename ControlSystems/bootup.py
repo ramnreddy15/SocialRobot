@@ -15,25 +15,24 @@ class Receiver:
     self.PORT = port
 
     #connecting using scokets
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     print('Socket created')
     #managing error exception
     try:
-      s.bind((self.HOST, self.PORT))
+      self.s.connect((self.HOST, self.PORT))
     except socket.error:
         print ('Bind failed ')
 
-    s.listen(5)
-    print('Socket awaiting messages')
-    (self.conn, addr) = s.accept()
     print('Connected')
+    print('Socket awaiting messages')
+    
   
   """Method receives commands from client and add to queue"""
   def telemetryReceive(self):
     # Commands must be in form "PRIORITY|{COMMAND}|TIMESTAMP|CHECKSUM"
     # awaiting for message
     while True:
-      action = self.conn.recv(1024).decode('UTF-8')
+      action = self.s.recv(1024).decode('UTF-8')
       if len(action) > 0:
         heapq.heappush(self.commands,action)
         print("Received|"+action)
@@ -65,10 +64,11 @@ class Receiver:
           heapq.heappush(self.transmit, "Incorrect|"+popped)
         
   def telemetryTransmit(self):
-    while True:
-      if len(self.transmit) > 0:
-        print("Transmit queue", self.transmit)
-        self.conn.send(bytes(heapq.heappop(self.transmit),'utf-8'))    
+    print("Nothing")
+    # while True:
+      # if len(self.transmit) > 0:
+      #   print("Transmit queue", self.transmit)
+      #   self.s.send(bytes(heapq.heappop(self.transmit),'utf-8'))    
 
   def execute(self):
     while True:
@@ -111,15 +111,15 @@ class Receiver:
   def runSimul(self):
     threading.Thread(target=self.telemetryReceive).start()
     threading.Thread(target=self.checkCommand).start()
-    threading.Thread(target=self.telemetryTransmit).start()
+    # threading.Thread(target=self.telemetryTransmit).start()
     threading.Thread(target=self.execute).start()
 
     # threading.Thread(target=self.sensorData).start()
 
     # threading.Thread(target=self.balance).start()
-    threading.Thread(target=self.gaitGen).start()
+    # threading.Thread(target=self.gaitGen).start()
     # threading.Thread(target=self.comuterVision).start()
 
 def startBoot():
-  simulation = Receiver('10.235.1.145',12345)
+  simulation = Receiver('192.168.86.136',12345)
   simulation.runSimul()
