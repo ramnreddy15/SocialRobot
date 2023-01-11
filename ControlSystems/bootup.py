@@ -25,8 +25,8 @@ class Receiver:
 
     print('Connected')
     print('Socket awaiting messages')
-    
-  
+
+
   """Method receives commands from client and add to queue"""
   def telemetryReceive(self):
     # Commands must be in form "PRIORITY|{COMMAND}|TIMESTAMP|CHECKSUM"
@@ -37,18 +37,18 @@ class Receiver:
         heapq.heappush(self.commands,action)
         print("Received|"+action)
         heapq.heappush(self.transmit,"Received|"+action)
-          
+
   """Method checks commands from queue and adds to execution queue"""
   def checkCommand(self):
     while True:
       if len(self.commands) > 0:
         #checking if the checksum of the command
-        #equals the sum of all ascii values of every character 
+        #equals the sum of all ascii values of every character
         #in command statement
         pattern = "^[0-5]\|.*\|[0-9]{2}:[0-9]{2}\|" #everything but the checksum value
         checksum = "\w+$" #checksum value
         popped = heapq.heappop(self.commands) #gets smallest value command
-        com = re.findall(pattern, popped) 
+        com = re.findall(pattern, popped)
         numval = re.findall(checksum, popped)
         numval = numval[0]
         numval = int(numval,16) #converts hex to int
@@ -60,15 +60,15 @@ class Receiver:
           heapq.heappush(self.executions, popped)
           print(self.transmit)
           print(self.executions)
-        else: 
+        else:
           heapq.heappush(self.transmit, "Incorrect|"+popped)
-        
+
   def telemetryTransmit(self):
     print("Nothing")
     # while True:
       # if len(self.transmit) > 0:
       #   print("Transmit queue", self.transmit)
-      #   self.s.send(bytes(heapq.heappop(self.transmit),'utf-8'))    
+      #   self.s.send(bytes(heapq.heappop(self.transmit),'utf-8'))
 
   def execute(self):
     while True:
@@ -121,5 +121,5 @@ class Receiver:
     # threading.Thread(target=self.comuterVision).start()
 
 def startBoot():
-  simulation = Receiver('192.168.86.136',12345)
+  simulation = Receiver('10.64.173.71',12345)
   simulation.runSimul()

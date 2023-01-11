@@ -1,7 +1,7 @@
 import socket
 import threading
 
-HOST = '192.168.86.136' # Enter IP or Hostname of your server
+HOST = '172.20.10.2' # Enter IP or Hostname of your server
 PORT = 12345 # Pick an open Port (1000+ recommended), must match the server port
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,7 +23,7 @@ def telemetrySend():
         if command != None:
             clientsocket.send(bytes(command, 'utf-8'))
 
-def main():    
+def main():
     threading.Thread(target=telemetryReceive).start()
     threading.Thread(target=telemetrySend).start()
 
