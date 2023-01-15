@@ -1,8 +1,8 @@
 import os
 import openai
 
-openai.organization = "org-suTf2NBidIX4WHsJYzbuwbME"
-openai.api_key = "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"
+openai.organization = "[]"
+openai.api_key = "[]"
 openai.Model.list()
 
 # pip install SpeechRecognition
