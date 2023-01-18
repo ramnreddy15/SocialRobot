@@ -108,6 +108,47 @@ class Receiver:
                 threading.Thread(target=self.chatbot).start()
             else:
                 self.insideChatbot = False
+                print("Chatbot ended")
+                heapq.heappush(self.transmit,"Chatbot has ended")
+
+  """Method checks commands from queue and adds to execution queue"""
+  def checkCommand(self):
+    while True:
+      if len(self.commands) > 0:
+        popped = heapq.heappop(self.commands) #gets smallest value command
+        heapq.heappush(self.transmit, "Correct|"+popped)
+        heapq.heappush(self.executions, popped)
+        print(self.transmit)
+        print(self.executions)
+
+  def telemetryTransmit(self):
+    print("Nothing")
+    while True:
+      if len(self.transmit) > 0:
+        print("Transmit queue", self.transmit)
+        self.s.send(bytes(heapq.heappop(self.transmit),'utf-8'))
+
+  def moveRobot(self, command):
+    arr = [int(i) for i in command.split(" ")]
+    Left.value = arr[0]
+    Right.value = arr[1]
+    time.sleep(0.1)
+
+  def execute(self):
+    while True:
+      if len(self.executions) > 0:
+        command = heapq.heappop(self.executions)
+        print(command)
+        heapq.heappush(self.transmit, "Executed|"+command)
+        if "move" in command:
+            self.moveRobot(command[5:])
+        if "changeChatbot" in command:
+            if self.insideChatbot == False:
+                self.insideChatbot = True
+                threading.Thread(target=self.chatbot).start()
+            else:
+                self.insideChatbot = False
+                print("Chatbot ended")
 
         # if command == "Password A_on_LED":
           # if onAndOfffLed():
