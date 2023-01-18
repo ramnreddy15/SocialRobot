@@ -108,7 +108,6 @@ class Receiver:
                 threading.Thread(target=self.chatbot).start()
             else:
                 self.insideChatbot = False
-                threading.Thread(target=self.chatbot).join()
 
         # if command == "Password A_on_LED":
           # if onAndOfffLed():
@@ -118,7 +117,7 @@ class Receiver:
         print("Inside execute",self.executions)
         time.sleep(5)
 
-  def SpeakText(command):
+  def SpeakText(self, command):
     # Initialize the engine
     engine.say(command)
     engine.runAndWait()
@@ -142,7 +141,7 @@ class Receiver:
                 r.adjust_for_ambient_noise(source2, duration=0.2)
 
                 # listens for the user's input
-                audio2 = r.listen(source2, phrase_time_limit=5)
+                audio2 = r.listen(source2, phrase_time_limit=3)
                 # Using google to recognize audio
                 MyText = r.recognize_google(audio2)
                 MyText = MyText.lower()
@@ -161,7 +160,7 @@ class Receiver:
                 query = response.choices[0].text
                 query = query.replace("John", "Baymax")
                 print(query)
-                SpeakText(query)
+                self.SpeakText(query)
 
         except sr.RequestError as e:
             print()
