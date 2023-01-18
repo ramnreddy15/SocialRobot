@@ -3,14 +3,36 @@ import threading
 import socket
 import heapq
 import time
+
+import speech_recognition as sr
+from gtts import gTTS
+import pyttsx3
+import os
+import openai
 #import serial
 
 
 
+openai.organization = "org-suTf2NBidIX4WHsJYzbuwbME"
+file = open("/home/pi/Desktop/openai.txt")
+openai.api_key = file.readline().strip()
+openai.Model.list()
 #These are the 5th and 6th pins from the top left with usb facing downwards
 #Use servo.value = val to set the servos position and delays to make things smooth.
 #Range is -1 max speed in one direction and 1 is max speed in other direction
 
+os.environ['PA_ALSA_PLUGHW']='1'
+
+# Initialize the recognizer
+r = sr.Recognizer()
+engine = pyttsx3.init("espeak")
+
+# Function to convert text to
+# speech
+
+engine.setProperty('rate', 200)
+engine.setProperty('volume', 1)
+engine.setProperty('voice', "en-us")
 
 #Right = Servo(27)
 #Left = Servo(17)
@@ -24,6 +46,7 @@ class Receiver:
     self.timer = 0
     self.HOST = host
     self.PORT = port
+    self.insideChatbot = False
 
     #connecting using scokets
     self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -79,6 +102,14 @@ class Receiver:
         heapq.heappush(self.transmit, "Executed|"+command)
         if "move" in command:
             self.moveRobot(command[5:])
+        if "changeChatbot" in command:
+            if self.insideChatbot == False:
+                self.insideChatbot = True
+                threading.Thread(target=self.chatbot).start()
+            else:
+                self.insideChatbot = False
+                threading.Thread(target=self.chatbot).join()
+
         # if command == "Password A_on_LED":
           # if onAndOfffLed():
           #   print("Executed: ", command)
@@ -87,8 +118,58 @@ class Receiver:
         print("Inside execute",self.executions)
         time.sleep(5)
 
+  def SpeakText(command):
+    # Initialize the engine
+    engine.say(command)
+    engine.runAndWait()
+  
   def chatbot(self):
-    
+    # Loop infinitely for user to
+    # speak
+
+    while (self.insideChatbot):
+
+        # Exception handling to handle
+        # exceptions at the runtime
+        try:
+            # use the microphone as source for input.
+            #device_index=2
+            with sr.Microphone() as source2:
+
+                # wait for a second to let the recognizer
+                # adjust the energy threshold based on
+                # the surrounding noise level
+                r.adjust_for_ambient_noise(source2, duration=0.2)
+
+                # listens for the user's input
+                audio2 = r.listen(source2, phrase_time_limit=5)
+                # Using google to recognize audio
+                MyText = r.recognize_google(audio2)
+                MyText = MyText.lower()
+
+
+                #Query the API
+                response = openai.Completion.create(
+                engine="text-davinci-003",
+                prompt=MyText,
+                temperature=0,
+                max_tokens=150,
+
+                )
+                print(f"you said: {MyText}")
+                print(f"response:")
+                query = response.choices[0].text
+                query = query.replace("John", "Baymax")
+                print(query)
+                SpeakText(query)
+
+        except sr.RequestError as e:
+            print()
+            #print("Could not request results; {0}".format(e))
+
+        except sr.UnknownValueError:
+            #print("unknown error occurred")
+            print() 
 
   def gaitGen(self):
     print("Nothing")
