@@ -2,7 +2,8 @@ import os
 import openai
 
 openai.organization = "org-suTf2NBidIX4WHsJYzbuwbME"
-openai.api_key = "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"
+file = open("/home/pi/Desktop/openai.txt")
+openai.api_key = file.readline().strip()
 openai.Model.list()
 
 # pip install SpeechRecognition
@@ -14,6 +15,8 @@ openai.Model.list()
 # Python program to translate
 # speech to text and text to speech
 
+import os
+os.environ['PA_ALSA_PLUGHW']='1'
 
 import speech_recognition as sr
 from gtts import gTTS
@@ -26,10 +29,9 @@ engine = pyttsx3.init("espeak")
 # Function to convert text to
 # speech
 
-voice = engine.getProperty('voices')
 engine.setProperty('rate', 200)
 engine.setProperty('volume', 1)
-engine.setProperty('voice', "en-GB")
+engine.setProperty('voice', "en-us")
 
 def SpeakText(command):
 	# Initialize the engine
@@ -70,6 +72,8 @@ while (1):
             max_tokens=150,
 
             )
+            print(f"you said: {MyText}")
+            print(f"response:")
             query = response.choices[0].text
             query = query.replace("John", "Baymax")
             print(query)

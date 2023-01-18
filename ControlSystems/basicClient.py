@@ -5,15 +5,15 @@ import heapq
 import time
 #import serial
 
-from gpiozero import Servo
+
 
 #These are the 5th and 6th pins from the top left with usb facing downwards
 #Use servo.value = val to set the servos position and delays to make things smooth.
 #Range is -1 max speed in one direction and 1 is max speed in other direction
 
 
-Right = Servo(27)
-Left = Servo(17)
+#Right = Servo(27)
+#Left = Servo(17)
 
 
 class Receiver:
@@ -40,7 +40,6 @@ class Receiver:
 
   """Method receives commands from client and add to queue"""
   def telemetryReceive(self):
-    # Commands must be in form "PRIORITY|{COMMAND}|TIMESTAMP|CHECKSUM"
     # awaiting for message
     while True:
       action = self.s.recv(1024).decode('UTF-8')
@@ -88,8 +87,8 @@ class Receiver:
         print("Inside execute",self.executions)
         time.sleep(5)
 
-  def balance(self):
-    print("Nothing")
+  def chatbot(self):
+    
 
   def gaitGen(self):
     print("Nothing")
@@ -120,5 +119,11 @@ class Receiver:
     # threading.Thread(target=self.comuterVision).start()
 
 def startBoot():
-  simulation = Receiver('172.20.10.2',12345)
-  simulation.runSimul()
+    arg = input("Enter HOST IP: ")
+    simulation = Receiver(arg,12345)
+    simulation.runSimul()
+
+def main():
+    startBoot()
+
+if __name__ == "__main__": main()
