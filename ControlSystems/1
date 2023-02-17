@@ -1,0 +1,19 @@
+import serial
+import keyboard
+import time
+
+ser = serial.Serial("/dev/ttyACM0", 9600)
+
+def activateMotor(val):
+    ser.write("1500".encode())
+    time.sleep(2)
+    ser.write(val.encode())
+    time.sleep(0.1)
+
+
+keyboard.add_hotkey("g", lambda: ser.write("1530".encode()))
+keyboard.add_hotkey('w',print, args=('1530'))
+keyboard.add_hotkey('s', activateMotor, args=('1470'))
+
+keyboard.wait('esc')
+
