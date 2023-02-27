@@ -8,15 +8,12 @@ currState = 1500
 ser.write("1500".encode())
 #Control Loop to send PWM values continously to the arduino
 while True:
-    input_value = input("Enter direction (w, a, s, d, k): ")
-
+    input_value = input("Enter direction (w, a, d, k): ")
+    
     if(input_value == "k"):
         ser.write("1500 1500".encode())
 
-    if(input_value == "s"):
-        ser.write("1430 1430".encode())
-
-    if(input_value == "s"):
+    if(input_value == "d"):
         ser.write("1540 1500".encode())
 
     if(input_value == "a"):
