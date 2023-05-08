@@ -1,5 +1,5 @@
 import serial
-import time
+import time 
 
 #declaring arduino PWM control device for drivetrain
 ser = serial.Serial("/dev/ttyACM0", 9600)
