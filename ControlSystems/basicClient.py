@@ -9,7 +9,7 @@ from gtts import gTTS
 import pyttsx3
 import os
 import openai
-#import serial
+import serial
 
 
 
